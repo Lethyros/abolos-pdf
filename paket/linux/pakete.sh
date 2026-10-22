@@ -8,7 +8,7 @@
 # Beide bringen ihr eigenes Qt mit (keine Abhängigkeit von der Qt-Version der Distribution).
 #
 # Aufruf:   QMAKE=/pfad/zu/qt/bin/qmake6 paket/linux/pakete.sh [programm]
-#   QMAKE   qmake des Qt, das mitgeliefert wird (z.B. aus aqtinstall)
+#   QMAKE   qmake des Qt, das mitgeliefert wird (z.B. von werkzeuge/qt_holen.py)
 #   programm  Standard: target/release/abolos-pdf
 #   NO_STRIP=1  nicht verkleinern (nötig auf sehr neuen Distributionen wie Arch: das strip in linuxdeploy
 #               kennt deren Bibliotheksformat nicht; in der CI auf älterem Ubuntu nicht nötig)

@@ -1132,7 +1132,7 @@ mod tests {
         let namen = |unterordner| {
             let mut v: Vec<String> = pdfs_finden(&wurzel, unterordner, &|| true)
                 .iter()
-                .map(|p| p.strip_prefix(&wurzel).unwrap().to_string_lossy().into_owned())
+                .map(|p| p.strip_prefix(&wurzel).unwrap().to_string_lossy().replace('\\', "/"))
                 .collect();
             v.sort();
             v

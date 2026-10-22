@@ -3,6 +3,7 @@
 #
 # Prüfablauf bei jedem Push und Pull Request (entspricht werkzeuge/pruefen.sh), unter Linux und Windows.
 # Alle Aktionen sind auf feste Commits festgelegt (Lieferkette); Dependabot schlägt Updates vor.
+# Qt kommt über werkzeuge/qt_holen.py direkt vom Qt-Server (aqtinstall versteht dessen neuen Aufbau nicht).
 name: Prüfen
 
 on:
@@ -30,10 +31,14 @@ jobs:
           components: clippy, rustfmt
       - name: Systempakete für Qt
         run: sudo apt-get update && sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev
-      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
-        with:
-          version: ${{ env.QT_VERSION }}
-          cache: true
+      - name: Qt laden (offizieller Qt-Server, Prüfsummen geprüft)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/py"
+          "$RUNNER_TEMP/py/bin/pip" install --quiet py7zr==1.1.4
+          qt=$("$RUNNER_TEMP/py/bin/python" werkzeuge/qt_holen.py "$QT_VERSION" linux_gcc_64 "$RUNNER_TEMP/qt")
+          echo "$qt/bin" >> "$GITHUB_PATH"
+          echo "QMAKE=$qt/bin/qmake6" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$qt/lib" >> "$GITHUB_ENV"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - name: PDFium laden (SHA256 geprüft)
         run: python3 werkzeuge/pdfium_holen.py linux-x64
@@ -60,11 +65,13 @@ jobs:
         with:
           toolchain: stable
           components: clippy
-      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
-        with:
-          version: ${{ env.QT_VERSION }}
-          arch: win64_msvc2022_64
-          cache: true
+      - name: Qt laden (offizieller Qt-Server, Prüfsummen geprüft)
+        shell: pwsh
+        run: |
+          $qt = python werkzeuge/qt_holen.py $env:QT_VERSION win64_msvc2022_64 "$env:RUNNER_TEMP\qt"
+          if ($LASTEXITCODE -ne 0) { throw "Qt konnte nicht geladen werden" }
+          "$qt\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          "QMAKE=$qt\bin\qmake6.exe" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - name: PDFium laden (SHA256 geprüft)
         run: python werkzeuge/pdfium_holen.py win-x64

@@ -40,10 +40,14 @@ jobs:
           toolchain: stable
       - name: Systempakete
         run: sudo apt-get update && sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev dpkg-dev
-      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
-        with:
-          version: ${{ env.QT_VERSION }}
-          cache: true
+      - name: Qt laden (offizieller Qt-Server, Prüfsummen geprüft)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/py"
+          "$RUNNER_TEMP/py/bin/pip" install --quiet py7zr==1.1.4
+          qt=$("$RUNNER_TEMP/py/bin/python" werkzeuge/qt_holen.py "$QT_VERSION" linux_gcc_64 "$RUNNER_TEMP/qt")
+          echo "$qt/bin" >> "$GITHUB_PATH"
+          echo "QMAKE=$qt/bin/qmake6" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$qt/lib" >> "$GITHUB_ENV"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
         with:
@@ -61,7 +65,7 @@ jobs:
           ABOLOS_MAINTAINER: Oliver Weber
           ABOLOS_HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
         run: |
-          QMAKE=$(command -v qmake6 || command -v qmake) paket/linux/pakete.sh target/release/abolos-pdf
+          paket/linux/pakete.sh target/release/abolos-pdf
           cp sbom/abolos-pdf.cdx.json dist/abolos-pdf-linux-x64.cdx.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -79,11 +83,13 @@ jobs:
       - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
         with:
           toolchain: stable
-      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
-        with:
-          version: ${{ env.QT_VERSION }}
-          arch: win64_msvc2022_64
-          cache: true
+      - name: Qt laden (offizieller Qt-Server, Prüfsummen geprüft)
+        shell: pwsh
+        run: |
+          $qt = python werkzeuge/qt_holen.py $env:QT_VERSION win64_msvc2022_64 "$env:RUNNER_TEMP\qt"
+          if ($LASTEXITCODE -ne 0) { throw "Qt konnte nicht geladen werden" }
+          "$qt\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
+          "QMAKE=$qt\bin\qmake6.exe" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
         with:

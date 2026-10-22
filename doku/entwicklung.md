@@ -42,6 +42,8 @@ Ergebnisse gehen über `qt_thread().queue(...)` zurück in den Hauptthread. Geme
 - Python 3 (Hilfsskripte)
 - für den Prüfablauf: `cargo install --locked cargo-deny cargo-cyclonedx` und `cargo install --locked cargo-about --features cli`; optional `reuse` (Arch: `sudo pacman -S reuse`)
 
+Qt zum Mitliefern (Pakete, CI) lädt `werkzeuge/qt_holen.py <version> <architektur> <ziel>` direkt vom offiziellen Qt-Server und prüft dabei die veröffentlichten Prüfsummen. Architekturen: `linux_gcc_64`, `win64_msvc2022_64`. aqtinstall versteht den seit Qt 6.12 geänderten Aufbau des Servers nicht (aqtinstall #1047).
+
 PDFium ist nicht im Repository. `werkzeuge/pdfium_holen.py` lädt das vorgebaute Paket „chromium/7881“ von bblanchon/pdfium-binaries (ohne V8 und XFA) und **akzeptiert nur die fest eingetragene SHA256-Prüfsumme**:
 
 ```
@@ -66,7 +68,7 @@ Das Programm sucht `libpdfium.so` bzw. `pdfium.dll` in dieser Reihenfolge:
 
 | Paket | Skript | Inhalt |
 |---|---|---|
-| AppImage, .deb | `paket/linux/pakete.sh` | Programm, PDFium, mitgeliefertes Qt (aus aqtinstall), Desktop-Datei, Symbole, Lizenzen |
+| AppImage, .deb | `paket/linux/pakete.sh` | Programm, PDFium, mitgeliefertes Qt (`werkzeuge/qt_holen.py`), Desktop-Datei, Symbole, Lizenzen |
 | Windows-Ordner | `paket/windows/vorbereiten.ps1` | Programm, PDFium, Qt (windeployqt), Visual-C++-Laufzeit, Lizenzen |
 | Windows-Installer | `paket/windows/abolos-pdf.iss` | Inno Setup: pro Benutzer ohne Adminrechte, optional für alle mit Firewall-Regel, „Öffnen mit“, Deinstallation |
 

@@ -12,6 +12,8 @@ export PATH="$HOME/.cargo/bin:$PATH"
 ziel=lizenzen/DRITTANBIETER.txt
 crates=$(mktemp)
 trap 'rm -f "$crates"' EXIT
+# Paketindex und Quellen erst laden: auf einem frischen Rechner (CI) kennt cargo sonst nichts
+cargo fetch --locked >/dev/null
 cargo about generate --offline --fail about.hbs > "$crates"
 
 # als UTF-8 ausgeben (einige Lizenzdateien sind Latin-1, die Hilfe braucht UTF-8)

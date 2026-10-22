@@ -132,5 +132,6 @@ Diese Werkzeuge werden nicht Teil des Programms und haben deshalb keinen Einflus
 | linuxdeploy, linuxdeploy-plugin-qt | AppImage bauen | MIT |
 | windeployqt | Qt für Windows zusammenstellen | Teil von Qt |
 | Inno Setup | Windows-Installer bauen | Inno Setup License (frei) |
-| aqtinstall | Qt in der CI installieren | MIT |
+| py7zr | Qt-Archive entpacken (`werkzeuge/qt_holen.py`, Linux) | LGPL-2.1 oder später |
+| 7-Zip | Qt-Archive entpacken (Windows) | LGPL-2.1 und andere |
 | stable-diffusion.cpp mit Z-Image Turbo | Programmsymbol erzeugen (einmalig) | MIT; Modell Apache-2.0 |

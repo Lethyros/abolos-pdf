@@ -248,3 +248,24 @@ fn textauswahl_liefert_text_und_rechtecke() {
     assert!(text.starts_with("Schutz und Schutzleiter"), "{text:?}");
     std::fs::remove_dir_all(&ordner).unwrap();
 }
+
+#[test]
+fn speichern_ueber_die_geoeffnete_datei() {
+    // Strg+S: Ziel ist die Datei, die gerade offen ist (unter Windows heikel: Datei ist noch geöffnet)
+    let _s = nacheinander();
+    let ordner = temp_ordner("ueberschreiben");
+    let pdf = testkopie(&ordner, "a.pdf");
+    oeffnen(&pdf);
+    anlegen(Bearbeitung::Notiz { seite: 0, punkt: (0.5, 0.5), text: "gespeichert".into(), farbe: [255, 212, 0, 255] })
+        .unwrap();
+    let ziel = pdf.clone();
+    let ergebnis = engine::engine().unwrap().ausfuehren(move |stand| bearbeiten::speichern(stand, &ziel)).unwrap();
+    assert_eq!(ergebnis, Ok(()));
+    // weiterarbeiten nach dem Speichern: Seiten lassen sich noch lesen
+    assert_eq!(treffer(1, "niederspannungsanlagen", Suchoptionen::default()).len(), 1);
+    oeffnen(&pdf);
+    let liste = anmerkungen();
+    assert_eq!(liste.len(), 1);
+    assert_eq!(liste[0].inhalt, "gespeichert");
+    std::fs::remove_dir_all(&ordner).unwrap();
+}
