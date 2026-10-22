@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Prüfablauf bei jedem Push und Pull Request (entspricht werkzeuge/pruefen.sh), unter Linux und Windows.
+# Alle Aktionen sind auf feste Commits festgelegt (Lieferkette); Dependabot schlägt Updates vor.
+name: Prüfen
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_VERSION: "6.12.0"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux:
+    name: Linux
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+      - name: Systempakete für Qt
+        run: sudo apt-get update && sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev
+      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: ${{ env.QT_VERSION }}
+          cache: true
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: PDFium laden (SHA256 geprüft)
+        run: python3 werkzeuge/pdfium_holen.py linux-x64
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+        with:
+          tool: cargo-deny
+      - name: Formatierung
+        run: cargo fmt --check
+      - name: Statische Analyse (Clippy, keine Warnungen)
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test
+      - name: Abhängigkeiten (Schwachstellen, Lizenzen, Herkunft)
+        run: cargo deny check
+      - name: SPDX-Kennzeichnung (REUSE)
+        uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6.0.0
+
+  windows:
+    name: Windows
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: stable
+          components: clippy
+      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: ${{ env.QT_VERSION }}
+          arch: win64_msvc2022_64
+          cache: true
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: PDFium laden (SHA256 geprüft)
+        run: python werkzeuge/pdfium_holen.py win-x64
+      - name: Statische Analyse (Clippy, keine Warnungen)
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Tests
+        run: cargo test

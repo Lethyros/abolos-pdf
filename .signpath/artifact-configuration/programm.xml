@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-FileCopyrightText: 2026 Oliver Weber -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SignPath-Artefaktkonfiguration "programm": GitHub-Artefakt (ZIP) mit abolos-pdf.exe;
+     nur die eigene .exe wird signiert (Authenticode), fremde Dateien nicht -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file path="abolos-pdf.exe" product-name="Abolos PDF">
+      <authenticode-sign/>
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

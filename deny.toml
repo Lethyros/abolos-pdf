@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# cargo-deny: prüft alle Rust-Abhängigkeiten auf bekannte Sicherheitslücken (RustSec),
+# erlaubte Lizenzen, doppelte Versionen und Herkunft. Aufruf: cargo deny check
+
+[graph]
+all-features = false
+# nur die Plattformen, für die Abolos PDF gebaut wird (pdfium-render bringt z.B. für WebAssembly
+# weitere Abhängigkeiten mit, die unter Linux nie übersetzt werden)
+targets = ["x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu"]
+
+[advisories]
+# RustSec-Datenbank; Sicherheitslücken führen immer zum Fehler
+unmaintained = "all"
+yanked = "deny"
+ignore = []
+
+[licenses]
+# nur freizügige Lizenzen, die mit GPL-3.0-or-later vereinbar sind
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Zlib",
+    "Unlicense",
+    "0BSD",
+    "Unicode-3.0",
+]
+confidence-threshold = 0.9
+# das eigene Paket (publish = false) steht unter GPL-3.0-or-later
+private = { ignore = true }
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+# nur das offizielle crates.io, keine fremden Quellen
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

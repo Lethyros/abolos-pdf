@@ -1,0 +1,2 @@
+Z-Image Turbo (Q6_K) über stable-diffusion.cpp, 512x512, 8 Schritte, cfg 1.0, seed 42, CPU.
+Freigestellt mit werkzeuge/symbol.py.

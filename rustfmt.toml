@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Einheitliche Formatierung (cargo fmt); breite Zeilen wie im bestehenden Code
+max_width = 120
+use_small_heuristics = "Max"

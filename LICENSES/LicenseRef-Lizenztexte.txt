@@ -1,0 +1,5 @@
+Lizenztexte der Fremdsoftware (Verzeichnis lizenzen/)
+
+Diese Dateien sind wörtliche Kopien bzw. eine Zusammenstellung der Lizenztexte
+der in Abolos PDF verwendeten Fremdsoftware. Jeder Text gilt für die Software,
+die er nennt; die Weitergabe der Texte in unveränderter Form ist erlaubt.

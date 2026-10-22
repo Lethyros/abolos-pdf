@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-FileCopyrightText: 2026 Oliver Weber -->
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<!-- SignPath-Artefaktkonfiguration "installer": GitHub-Artefakt (ZIP) mit dem Inno-Setup-Installer -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <zip-file>
+    <pe-file path="Abolos-PDF-*-Setup-x64.exe" product-name="Abolos PDF">
+      <authenticode-sign/>
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

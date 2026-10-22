@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Monatliche Update-Vorschläge für Rust-Bibliotheken und GitHub-Aktionen (Schwachstellen-Management)
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

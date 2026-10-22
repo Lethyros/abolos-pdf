@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Lizenzangaben für Dateien ohne eigenen Kopf (REUSE-Spezifikation 3.3, https://reuse.software)
+version = 1
+
+[[annotations]]
+path = ["doku/**", "README.md", "CHANGELOG.md", "SECURITY.md", "about.hbs", "paket/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Oliver Weber"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["Cargo.lock", "sbom/**", "tests/daten/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Oliver Weber"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["lizenzen/**"]
+precedence = "override"
+SPDX-FileCopyrightText = "die jeweiligen Rechteinhaber der Fremdsoftware"
+SPDX-License-Identifier = "LicenseRef-Lizenztexte"

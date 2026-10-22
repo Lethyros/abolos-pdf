@@ -1,0 +1,11 @@
+﻿Abolos PDF – Offline-PDF-Reader
+
+Abolos PDF ist freie Software unter der GNU General Public License, Version 3 oder später. Sie dürfen das Programm nutzen, weitergeben und verändern. Es wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt; den vollständigen Lizenztext finden Sie nach der Installation im Ordner „lizenzen“ und im Programm unter Hilfe (F1).
+
+Was Sie wissen sollten:
+
+- Abolos PDF hat keine Netzwerkfunktionen: keine Updates, keine Werbung, keine Telemetrie, kein Abo.
+- Die Installation braucht keine Adminrechte. Wer als Administrator „für alle Benutzer“ installiert, kann zusätzlich eine Firewall-Regel anlegen lassen, die dem Programm jeden Netzwerkzugriff verbietet.
+- Ihre PDF-Dateien bleiben unverändert, bis Sie Anmerkungen ausdrücklich speichern.
+
+Copyright © 2026 Oliver Weber

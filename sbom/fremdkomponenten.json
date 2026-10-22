@@ -1,0 +1,341 @@
+{
+  "_hinweis": "Von Hand gepflegt: Fremdkomponenten außerhalb von Cargo. Bei Updates von PDFium oder Qt Versionen anpassen und werkzeuge/sbom.py ausführen.",
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pdfium",
+      "name": "PDFium",
+      "version": "151.0.7881",
+      "description": "PDF-Engine; vorgebautes Paket von bblanchon/pdfium-binaries (MIT), ohne V8/JavaScript und ohne XFA; liegt als third_party/pdfium/lib/libpdfium.so bei",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pdfium.googlesource.com/pdfium/"
+        }
+      ],
+      "direkt": true
+    },
+    {
+      "type": "library",
+      "bom-ref": "pdfium-binaries",
+      "name": "pdfium-binaries (Paket)",
+      "version": "chromium/7881",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/bblanchon/pdfium-binaries"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "freetype",
+      "name": "FreeType",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "FTL"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://freetype.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "libjpeg-turbo",
+      "name": "libjpeg-turbo",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "expression": "IJG AND BSD-3-Clause"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://libjpeg-turbo.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "openjpeg",
+      "name": "OpenJPEG",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.openjpeg.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "libpng",
+      "name": "libpng",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "libpng-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "http://www.libpng.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "libtiff",
+      "name": "libtiff",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "libtiff"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://libtiff.gitlab.io/libtiff/"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "zlib",
+      "name": "zlib",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "Zlib"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://zlib.net"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "lcms2",
+      "name": "Little CMS",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.littlecms.com"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "agg",
+      "name": "Anti-Grain Geometry",
+      "version": "2.3",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "name": "LicenseRef-AGG-2.3"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://agg.sourceforge.net"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "abseil",
+      "name": "Abseil",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://abseil.io"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "icu",
+      "name": "ICU",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unicode-3.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://icu.unicode.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "fast_float",
+      "name": "fast_float",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/fastfloat/fast_float"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "simdutf",
+      "name": "simdutf",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/simdutf/simdutf"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "llvm-libc",
+      "name": "LLVM libc",
+      "description": "in PDFium 151.0.7881 enthalten (statisch gelinkt in libpdfium.so)",
+      "licenses": [
+        {
+          "expression": "Apache-2.0 WITH LLVM-exception"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://libc.llvm.org"
+        }
+      ],
+      "direkt": false
+    },
+    {
+      "type": "library",
+      "bom-ref": "qt6-base",
+      "name": "Qt Base (Core, Gui, DBus, Network, OpenGL)",
+      "version": "6.12.0",
+      "description": "dynamisch gelinkt; bei eigenem Bau die Systembibliothek, in AppImage, .deb und Windows-Paket mitgeliefert",
+      "licenses": [
+        {
+          "expression": "LGPL-3.0-only OR GPL-3.0-only"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.qt.io"
+        }
+      ],
+      "direkt": true
+    },
+    {
+      "type": "library",
+      "bom-ref": "qt6-declarative",
+      "name": "Qt Declarative (Qml, Quick, Quick Controls, Quick Dialogs)",
+      "version": "6.12.0",
+      "description": "dynamisch gelinkt; bei eigenem Bau die Systembibliothek, in AppImage, .deb und Windows-Paket mitgeliefert",
+      "licenses": [
+        {
+          "expression": "LGPL-3.0-only OR GPL-3.0-only"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.qt.io"
+        }
+      ],
+      "direkt": true
+    }
+  ]
+}

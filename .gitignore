@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+/target
+# von cxx-qt beim Bauen erzeugt, enthält absolute Pfade dieses Rechners
+/.qmlls.ini
+# PDFium wird mit geprüfter Prüfsumme geladen: werkzeuge/pdfium_holen.py
+/third_party/pdfium/
+# Pakete und Zwischenstände der Paketbauskripte
+/dist/
+/build/
+# persönliches Entwicklungstagebuch (lokale Pfade), wird nicht veröffentlicht
+/NOTIZEN.md
+# Python-Zwischendateien
+__pycache__/

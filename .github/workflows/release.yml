@@ -1,0 +1,203 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Release: bei einem Versions-Tag (z.B. v0.9.0) alle Pakete bauen und als GitHub-Release veröffentlichen.
+#   Linux:   AppImage, .deb
+#   Windows: Installer (Inno Setup, ohne Adminrechte), ZIP ohne Installation
+#   dazu:    SHA256SUMS.txt, Software-Stücklisten (CycloneDX), Lizenztexte
+# Manuell gestartet (workflow_dispatch) entstehen nur die Pakete als Artefakte, kein Release.
+#
+# Code-Signatur (Windows) über SignPath: schaltet sich ein, sobald die Repository-Variable
+# SIGNPATH_ORGANIZATION_ID gesetzt ist (Einrichtung: doku/entwicklung.md, „Windows-Signatur“).
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  QT_VERSION: "6.12.0"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux:
+    name: Linux-Pakete
+    # älteres Ubuntu: die Pakete laufen dann auch auf älteren Distributionen (glibc 2.35)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Version prüfen (Tag = Cargo.toml)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          test "v$version" = "${GITHUB_REF_NAME}" || { echo "Tag ${GITHUB_REF_NAME} passt nicht zu Cargo.toml ($version)"; exit 1; }
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: stable
+      - name: Systempakete
+        run: sudo apt-get update && sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev dpkg-dev
+      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: ${{ env.QT_VERSION }}
+          cache: true
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+        with:
+          tool: cargo-about,cargo-cyclonedx
+      - name: PDFium laden (SHA256 geprüft)
+        run: python3 werkzeuge/pdfium_holen.py linux-x64
+      - name: Lizenztexte und Software-Stückliste
+        run: |
+          werkzeuge/lizenzen.sh
+          python3 werkzeuge/sbom.py x86_64-unknown-linux-gnu
+      - name: Übersetzen
+        run: cargo build --release --locked
+      - name: AppImage und .deb
+        env:
+          ABOLOS_MAINTAINER: Oliver Weber
+          ABOLOS_HOMEPAGE: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          QMAKE=$(command -v qmake6 || command -v qmake) paket/linux/pakete.sh target/release/abolos-pdf
+          cp sbom/abolos-pdf.cdx.json dist/abolos-pdf-linux-x64.cdx.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux
+          path: dist/*
+          if-no-files-found: error
+
+  windows:
+    name: Windows-Pakete
+    runs-on: windows-2025
+    env:
+      SIGNIEREN: ${{ vars.SIGNPATH_ORGANIZATION_ID != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # master
+        with:
+          toolchain: stable
+      - uses: jurplel/install-qt-action@a9c63c7c123f3069cff414e7e482d95dfa9d8125 # v4.4.1
+        with:
+          version: ${{ env.QT_VERSION }}
+          arch: win64_msvc2022_64
+          cache: true
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+        with:
+          tool: cargo-about,cargo-cyclonedx
+      - name: PDFium laden (SHA256 geprüft)
+        run: python werkzeuge/pdfium_holen.py win-x64
+      - name: Lizenztexte und Software-Stückliste
+        shell: bash
+        run: |
+          werkzeuge/lizenzen.sh
+          python werkzeuge/sbom.py x86_64-pc-windows-msvc
+      - name: Übersetzen
+        run: cargo build --release --locked
+      - name: Programmordner zusammenstellen
+        shell: pwsh
+        run: ./paket/windows/vorbereiten.ps1
+
+      # --- Signatur des Programms (nur mit SignPath-Einrichtung)
+      - name: Programm zum Signieren hochladen
+        if: env.SIGNIEREN == 'true'
+        id: unsigniert
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: programm-unsigniert
+          path: build/windows/abolos-pdf.exe
+      - name: Programm signieren (SignPath)
+        if: env.SIGNIEREN == 'true'
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: programm
+          github-artifact-id: ${{ steps.unsigniert.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: build/windows
+
+      - name: Installer und ZIP bauen
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.*)"').Matches[0].Groups[1].Value
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress; if ($LASTEXITCODE -ne 0) { throw "Inno Setup" } }
+          New-Item -ItemType Directory -Force dist | Out-Null
+          & $iscc "/DVersion=$version" "/DQuelle=..\..\build\windows" "/DWebseite=${{ github.server_url }}/${{ github.repository }}" paket\windows\abolos-pdf.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup fehlgeschlagen" }
+          Compress-Archive -Path build\windows\* -DestinationPath "dist\Abolos-PDF-$version-Windows-x64-ohne-Installation.zip"
+          Copy-Item sbom\abolos-pdf.cdx.json dist\abolos-pdf-windows-x64.cdx.json
+
+      # --- Signatur des Installers (nur mit SignPath-Einrichtung)
+      - name: Installer zum Signieren hochladen
+        if: env.SIGNIEREN == 'true'
+        id: installer
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: installer-unsigniert
+          path: dist/*-Setup-x64.exe
+      - name: Installer signieren (SignPath)
+        if: env.SIGNIEREN == 'true'
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.installer.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: Release veröffentlichen
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [linux, windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: "{linux,windows}"
+          path: dist
+          merge-multiple: true
+      - name: Prüfsummen, Lizenztexte, Versionshinweise
+        run: |
+          cp LICENSE dist/LICENSE.txt
+          cp lizenzen/DRITTANBIETER.txt dist/
+          (cd dist && sha256sum -- * > SHA256SUMS.txt)
+          version=${GITHUB_REF_NAME#v}
+          # Abschnitt dieser Version aus CHANGELOG.md
+          awk -v v="## $version" 'index($0, v) == 1 {an=1; next} an && /^## / {exit} an' CHANGELOG.md > notizen.md
+          cat >> notizen.md <<'EOF'
+
+          ---
+          **Herunterladen:** Windows: `…-Setup-x64.exe` (Installation ohne Adminrechte) oder die ZIP-Datei ohne Installation.
+          Linux: `.AppImage` (läuft fast überall) oder `.deb` (Debian, Ubuntu, Mint).
+          Prüfsummen in `SHA256SUMS.txt`, Bestandteile in den `.cdx.json`-Dateien (CycloneDX).
+
+          Die Pakete enthalten Qt 6.12.0 (LGPL-3.0). Quellcode von Qt:
+          https://download.qt.io/official_releases/qt/6.12/6.12.0/single/qt-everywhere-src-6.12.0.tar.xz
+          EOF
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
+        with:
+          name: Abolos PDF ${{ github.ref_name }}
+          # Versionen 0.x erscheinen als Vorabversion
+          prerelease: ${{ startsWith(github.ref_name, 'v0.') }}
+          body_path: notizen.md
+          files: dist/*
+          fail_on_unmatched_files: true

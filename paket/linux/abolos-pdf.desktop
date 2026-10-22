@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2026 Oliver Weber
+# SPDX-License-Identifier: GPL-3.0-or-later
+[Desktop Entry]
+Type=Application
+Name=Abolos PDF
+GenericName=PDF-Reader
+GenericName[en]=PDF Reader
+Comment=PDFs lesen, durchsuchen, markieren und kommentieren – offline, ohne Abo
+Comment[en]=Read, search, highlight and annotate PDFs – offline, no subscription
+Exec=abolos-pdf %f
+Icon=abolos-pdf
+Terminal=false
+Categories=Office;Viewer;
+MimeType=application/pdf;
+Keywords=PDF;Reader;Anmerkungen;Suche;
+StartupWMClass=abolos-pdf
