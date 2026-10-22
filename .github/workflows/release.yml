@@ -39,7 +39,13 @@ jobs:
         with:
           toolchain: stable
       - name: Systempakete
-        run: sudo apt-get update && sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev dpkg-dev
+        # X11- und Wayland-Bibliotheken, die die mitgelieferten Qt-Plugins brauchen (linuxdeploy packt sie ein)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl-dev libegl-dev libxkbcommon-dev libfontconfig1-dev dpkg-dev \
+            libxkbcommon-x11-0 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
+            libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xkb1 libxcb-xinerama0 \
+            libx11-xcb1 libxcb-render0 libxcb-shm0 libxcb-util1 libwayland-cursor0 libwayland-egl1
       - name: Qt laden (offizieller Qt-Server, Prüfsummen geprüft)
         run: |
           python3 -m venv "$RUNNER_TEMP/py"
