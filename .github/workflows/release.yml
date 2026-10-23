@@ -208,8 +208,9 @@ jobs:
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           name: Abolos PDF ${{ github.ref_name }}
-          # Versionen 0.x erscheinen als Vorabversion
-          prerelease: ${{ startsWith(github.ref_name, 'v0.') }}
+          # nur Tags mit Zusatz (z.B. v1.0.0-rc1) erscheinen als Vorabversion
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          make_latest: ${{ !contains(github.ref_name, '-') }}
           body_path: notizen.md
           files: dist/*
           fail_on_unmatched_files: true
