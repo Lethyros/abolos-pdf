@@ -55,7 +55,7 @@ jobs:
           echo "QMAKE=$qt/bin/qmake6" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=$qt/lib" >> "$GITHUB_ENV"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+      - uses: taiki-e/install-action@86f7a0ffb25f40114606501a311ebcfaf882ea32 # v2.88.0
         with:
           tool: cargo-about,cargo-cyclonedx
       - name: PDFium laden (SHA256 geprüft)
@@ -97,7 +97,7 @@ jobs:
           "$qt\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
           "QMAKE=$qt\bin\qmake6.exe" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - uses: taiki-e/install-action@a4d3f3f761dcd95cce1b72cb61cb6d1963438177 # v2.87.30
+      - uses: taiki-e/install-action@86f7a0ffb25f40114606501a311ebcfaf882ea32 # v2.88.0
         with:
           tool: cargo-about,cargo-cyclonedx
       - name: PDFium laden (SHA256 geprüft)
